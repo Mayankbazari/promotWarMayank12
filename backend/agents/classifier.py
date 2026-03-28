@@ -1,9 +1,17 @@
-"""Emergency Classifier Agent — categorizes the emergency type and severity."""
+"""Emergency Classifier Agent — categorizes the emergency type and severity.
+
+This module uses Google Gemini to process free-form emergency descriptions
+and return highly structured, valid JSON classification results.
+"""
 
 from __future__ import annotations
 
+import logging
 from agents.base import call_gemini_typed
 from models.schemas import ClassificationResult
+
+# Configure module logger
+logger = logging.getLogger(__name__)
 
 
 CLASSIFIER_PROMPT = """You are an expert emergency classifier with training in medical triage, \
@@ -31,7 +39,7 @@ Emergency description: "{text}"
 3. **confidence** — A float between 0.0 and 1.0 indicating classification confidence
 
 ## Output
-Return ONLY valid JSON — no markdown, no explanation:
+Return ONLY valid JSON matching this schema:
 {{
   "type": "<emergency_type>",
   "severity": "<severity_level>",
@@ -40,13 +48,17 @@ Return ONLY valid JSON — no markdown, no explanation:
 
 
 def classify_emergency(text: str) -> ClassificationResult:
-    """Classify an emergency from free-text description.
+    """Classify an emergency from free-text description using Gemini AI.
 
     Args:
-        text: User's description of the emergency.
+        text (str): User's description of the emergency (e.g. "Car crash on highway").
 
     Returns:
-        ClassificationResult with type, severity, and confidence.
+        ClassificationResult: Typed object with type, severity, and confidence score.
+
+    Raises:
+        RuntimeError: If the AI agent pipeline fails after multiple retries.
     """
+    logger.info("🚦 Classifying emergency text (length: %d)", len(text))
     prompt = CLASSIFIER_PROMPT.format(text=text)
     return call_gemini_typed(prompt, ClassificationResult, temperature=0.1)

@@ -23,6 +23,11 @@ def _get_client() -> genai.Client:
     return genai.Client(api_key=settings.GEMINI_API_KEY)
 
 
+def _get_tools() -> list[dict]:
+    """Define the Google Search tools for Gemini grounding."""
+    return [{"google_search": {}}]
+
+
 def _extract_json(text: str) -> dict:
     """Extract JSON from LLM response, handling markdown code fences."""
     # Try direct parse first

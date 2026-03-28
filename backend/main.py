@@ -128,9 +128,14 @@ def analyze_emergency(data: EmergencyInput):
             )
             logger.info("🚨 Accident agent: risk=%s", accident_result.risk.value)
 
-        # Step 4: Attach tools
+        # Step 4: Attach tools (New: Location Extraction for Google Maps)
         emergency_numbers = get_emergency_numbers()
         severity_actions = get_severity_actions(classification.severity)
+
+        # Generate a Google Maps URL based on potential keywords (Hack: simplistic extraction)
+        # In a real app, you'd use a dedicated Location Agent
+        location_query = data.text.split("at")[-1].strip() if "at" in data.text.lower() else data.text[:50]
+        google_maps_url = f"https://www.google.com/maps/search/?api=1&query={location_query.replace(' ', '+')}"
 
         # Build summary
         summary = (
@@ -148,6 +153,7 @@ def analyze_emergency(data: EmergencyInput):
             actions=actions,
             emergency_numbers=emergency_numbers,
             summary=summary,
+            google_maps_url=google_maps_url,
         )
 
     except RuntimeError as exc:
