@@ -2,7 +2,7 @@
  * API client for the Emergency Decision Agent backend.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://promotwarmayank12-209862935302.us-central1.run.app';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 /**
  * Analyze an emergency description.
