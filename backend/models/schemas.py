@@ -56,6 +56,7 @@ class ClassificationResult(BaseModel):
     type: EmergencyType
     severity: SeverityLevel
     confidence: float = Field(ge=0.0, le=1.0)
+    reasoning: str = Field(description="Step-by-step triage reasoning")
 
 
 class PlannerResult(BaseModel):

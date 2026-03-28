@@ -254,6 +254,19 @@ function ResultsView({ data }) {
               Confidence: {(classification.confidence * 100).toFixed(1)}%
             </div>
           </div>
+
+          {/* Reasoning */}
+          {classification.reasoning && (
+            <div className="reasoning-box" style={{ marginTop: '1.5rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem' }}>
+              <div className="classification-item__label" style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center' }}>
+                <span style={{ fontSize: '1rem', marginRight: '0.5rem' }}>💬</span>
+                Agent Analysis
+              </div>
+              <p className="reasoning-text" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                "{classification.reasoning}"
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
