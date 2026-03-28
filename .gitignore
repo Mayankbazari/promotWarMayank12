@@ -11,6 +11,8 @@ __pycache__/
 # Build
 dist/
 build/
+backend/static/
+static/
 
 # IDE
 .vscode/

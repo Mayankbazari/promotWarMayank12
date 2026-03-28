@@ -12,6 +12,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 from agents.classifier import classify_emergency
 from agents.planner import plan_response
@@ -73,16 +76,6 @@ app.add_middleware(
 
 
 # ──────────────────────── Routes ────────────────────────
-
-
-@app.get("/")
-def read_root():
-    """Redirect to docs or show welcome message."""
-    return {
-        "message": "Welcome to AI Emergency Decision Agent API",
-        "docs": "/docs",
-        "health": "/health"
-    }
 
 
 @app.get("/health")
@@ -169,3 +162,22 @@ def analyze_emergency(data: EmergencyInput):
             status_code=500,
             detail="Internal server error while processing emergency",
         ) from exc
+
+# ──────────────────────── Static ────────────────────────
+
+# 1. Mount the UI files (if they exist) — this will serve as the frontend
+if os.path.exists("static"):
+    app.mount("/assets", StaticFiles(directory="static/assets"), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        """Serve the React app's index.html for all other paths (SPA support)."""
+        # Exclude specific API routes just in case (though FastAPI matches specific routes first)
+        if full_path in ["analyze", "health", "docs", "redoc", "openapi.json"]:
+            raise HTTPException(status_code=404)
+        
+        # Return index.html from static folder
+        index_path = os.path.join("static", "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+        return {"detail": "Frontend files missing"}
