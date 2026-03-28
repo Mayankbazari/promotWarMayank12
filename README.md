@@ -46,7 +46,8 @@ cp .env.example .env  # Add your GEMINI_API_KEY
 uvicorn main:app --reload
 ```
 
-API docs: http://localhost:8000/docs
+API docs: [Cloud Run Swagger UI](https://promotwarmayank12-209862935302.us-central1.run.app/docs)
+Health check: [Live /health](https://promotwarmayank12-209862935302.us-central1.run.app/health)
 
 ### Frontend
 

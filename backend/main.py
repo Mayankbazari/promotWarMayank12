@@ -75,6 +75,16 @@ app.add_middleware(
 # ──────────────────────── Routes ────────────────────────
 
 
+@app.get("/")
+def read_root():
+    """Redirect to docs or show welcome message."""
+    return {
+        "message": "Welcome to AI Emergency Decision Agent API",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
+
 @app.get("/health")
 def health_check():
     """Health check endpoint for Cloud Run."""
