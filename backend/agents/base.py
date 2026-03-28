@@ -90,7 +90,7 @@ def call_gemini(prompt: str, temperature: float | None = None) -> dict:
                 ) from exc
         except Exception as exc:
             logger.error("Gemini API error: %s", exc)
-            if attempt == settings.MAX_RETRIES:
+            if attempt == 1:
                 raise RuntimeError(f"Gemini API call failed: {exc}") from exc
 
 
