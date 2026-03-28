@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # Google Gemini
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MODEL: str = "gemini-1.5-flash-latest"
 
     # Server
     HOST: str = "0.0.0.0"
