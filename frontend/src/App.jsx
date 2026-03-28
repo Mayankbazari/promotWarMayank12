@@ -203,7 +203,7 @@ export default function App() {
    ════════════════════════════════════════════ */
 
 function ResultsView({ data }) {
-  const { classification, plan, actions, emergency_numbers, summary } = data;
+  const { classification, plan, actions, emergency_numbers, summary, google_maps_url } = data;
 
   return (
     <div className="results" aria-label="Analysis results">
