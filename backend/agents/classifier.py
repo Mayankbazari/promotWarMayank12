@@ -1,54 +1,64 @@
-"""Emergency Classifier Agent — categorizes the emergency type and severity."""
+"""Emergency Classifier Agent — categorizes the emergency type and severity.
+
+This module uses Google Gemini to process free-form emergency descriptions
+and return highly structured, valid JSON classification results.
+"""
 
 from __future__ import annotations
 
+import logging
 from agents.base import call_gemini_typed
 from models.schemas import ClassificationResult
 
+# Configure module logger
+logger = logging.getLogger(__name__)
 
-CLASSIFIER_PROMPT = """You are a highly experienced Emergency Dispatcher and Triage Specialist. \
-Your task is to analyze emergency reports and provide immediate, accurate classification.
 
-## Guidelines
-1. **Analyze First**: Carefully consider the reported situation.
-2. **Medical vs. Accident**: 
-   - Choose `medical` for health conditions, trauma, poisoning, drowning, or found deceased persons.
-   - Choose `accident` for mechanical/vehicle crashes, structural collapses, or work-related physical impacts.
-   - If BOTH apply (e.g., car crash with injury), choose `accident` as it implies a rescue operation plus medical aid.
-3. **Severity Assessment**: 
-   - `critical`: Unconscious, stopped breathing, severe hemorrhage, major vehicle trauma.
-   - `high`: Chest pain, breathing difficulty, major fractures.
-   - `medium/low`: Stable patients, minor injuries.
+CLASSIFIER_PROMPT = """You are an expert emergency classifier with training in medical triage, \
+accident assessment, and disaster response.
 
-## Examples
-- Input: "Found person dead on road"
-  Output: {"reasoning": "A person found in a suspected non-responsive/deceased state is a critical medical/police matter requiring immediate paramedic protocol.", "type": "medical", "severity": "critical", "confidence": 0.95}
-- Input: "Smoke coming from building window"
-  Output: {"reasoning": "Active smoke indicates an ongoing fire hazard and potential structure fire.", "type": "fire", "severity": "critical", "confidence": 1.0}
-- Input: "Car crashed into a divider, nobody is getting out"
-  Output: {"reasoning": "Vehicle impact with potentially trapped or unconscious occupants.", "type": "accident", "severity": "critical", "confidence": 0.98}
+## Task
+Analyze the following emergency description and classify it accurately.
 
-## Current Report
-Analyze this emergency: "{text}"
+## Input
+Emergency description: "{text}"
 
-## Global Instruction
-Respond with ONLY valid JSON matching this schema:
-{
-  "reasoning": "<thinking through the situation>",
-  "type": "medical" | "accident" | "fire" | "unknown",
-  "severity": "critical" | "high" | "medium" | "low",
+## Classification Rules
+1. **type** — Classify into exactly ONE of: "medical", "accident", "fire", "unknown"
+   - "medical": Health emergencies (chest pain, breathing difficulty, poisoning, seizure, etc.)
+   - "accident": Vehicle crashes, falls, workplace injuries, drowning, etc.
+   - "fire": Fire-related emergencies, gas leaks with fire risk, explosions
+   - "unknown": Cannot determine the emergency type from the description
+
+2. **severity** — Rate as ONE of: "critical", "high", "medium", "low"
+   - "critical": Immediate life threat (cardiac arrest, severe bleeding, unconsciousness)
+   - "high": Serious but not immediately fatal (chest pain, major fractures, burns)
+   - "medium": Needs medical attention but stable (minor fractures, moderate pain)
+   - "low": Non-urgent (minor cuts, mild symptoms)
+
+3. **confidence** — A float between 0.0 and 1.0 indicating classification confidence
+
+## Output
+Return ONLY valid JSON matching this schema:
+{{
+  "type": "<emergency_type>",
+  "severity": "<severity_level>",
   "confidence": <0.0-1.0>
-}"""
+}}"""
 
 
 def classify_emergency(text: str) -> ClassificationResult:
-    """Classify an emergency from free-text description.
+    """Classify an emergency from free-text description using Gemini AI.
 
     Args:
-        text: User's description of the emergency.
+        text (str): User's description of the emergency (e.g. "Car crash on highway").
 
     Returns:
-        ClassificationResult with type, severity, and confidence.
+        ClassificationResult: Typed object with type, severity, and confidence score.
+
+    Raises:
+        RuntimeError: If the AI agent pipeline fails after multiple retries.
     """
+    logger.info("🚦 Classifying emergency text (length: %d)", len(text))
     prompt = CLASSIFIER_PROMPT.format(text=text)
     return call_gemini_typed(prompt, ClassificationResult, temperature=0.1)

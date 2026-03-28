@@ -108,3 +108,4 @@ class EmergencyResponse(BaseModel):
     actions: list[AgentAction]
     emergency_numbers: EmergencyNumbers
     summary: Optional[str] = None
+    google_maps_url: Optional[str] = None

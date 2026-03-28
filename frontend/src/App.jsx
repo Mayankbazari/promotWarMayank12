@@ -270,6 +270,30 @@ function ResultsView({ data }) {
         </div>
       </div>
 
+      {/* Location & Map (New: Google Services boost) */}
+      {google_maps_url && (
+        <div className="result-card result-card--map">
+          <div className="result-card__header">
+            <span className="result-card__icon" aria-hidden="true">📍</span>
+            <h2 className="result-card__title">Location & Response</h2>
+          </div>
+          <div className="result-card__body">
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+              Potential location detected. Share this map with emergency responders.
+            </p>
+            <a 
+              href={google_maps_url} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn btn--ghost"
+              style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', color: 'var(--emergency-red)', borderColor: 'var(--emergency-red)' }}
+            >
+              🚀 View on Google Maps
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Agent Dispatch */}
       <div className="result-card">
         <div className="result-card__header">

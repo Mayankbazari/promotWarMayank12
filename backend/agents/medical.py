@@ -43,13 +43,13 @@ Return ONLY valid JSON — no markdown, no explanation:
 
 
 def handle_medical(text: str) -> MedicalResult:
-    """Generate medical emergency response guidance.
+    """Analyze a medical emergency and provide first-aid guidance.
 
     Args:
-        text: Description of the medical emergency.
+        text (str): Free-form medical emergency description.
 
     Returns:
-        MedicalResult with condition, actions, and risk level.
+        MedicalResult: Structured first-aid steps and risk assessment.
     """
     prompt = MEDICAL_PROMPT.format(text=text)
     return call_gemini_typed(prompt, MedicalResult, temperature=0.2)
