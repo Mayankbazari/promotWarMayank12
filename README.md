@@ -1,23 +1,33 @@
-# AI Fitness & Diet Planner
+# AI Emergency Decision Agent
 
-A multi-agent AI-powered fitness and diet planning application built with FastAPI, React, and Google Gemini.
+A multi-agent AI-powered emergency analysis system that classifies emergencies and generates structured action plans using Google Gemini.
 
-## Overview
+## Architecture
 
-This project implements an orchestrator pattern with three specialized AI agents:
-
-- **Planner Agent** — Analyzes user health data and coordinates the workflow
-- **Fitness Agent** — Generates personalized workout plans
-- **Diet Agent** — Creates tailored nutrition and meal plans
+```
+User Input (text)
+        ↓
+Emergency Classifier Agent (Gemini)
+        ↓
+Planner Agent (decides flow)
+        ↓
+Specialized Agents
+  ├─ Medical Agent
+  └─ Accident Agent
+        ↓
+Tools (emergency numbers, severity rules)
+        ↓
+Final Structured Action Plan
+```
 
 ## Tech Stack
 
-| Layer     | Technology          |
-|-----------|---------------------|
-| Backend   | FastAPI + Python    |
-| Frontend  | React + Vite        |
-| AI        | Google Gemini API   |
-| Alt. UI   | Streamlit           |
+| Layer      | Technology              |
+|------------|------------------------|
+| Backend    | FastAPI + Python 3.12  |
+| Frontend   | React + Vite           |
+| AI         | Google Gemini API      |
+| Deployment | Cloud Run + Docker     |
 
 ## Getting Started
 
@@ -32,15 +42,36 @@ This project implements an orchestrator pattern with three specialized AI agents
 ```bash
 cd backend
 pip install -r requirements.txt
+cp .env.example .env  # Add your GEMINI_API_KEY
 uvicorn main:app --reload
 ```
 
-### Frontend (React)
+API docs: [Cloud Run Swagger UI](https://promotwarmayank12-209862935302.us-central1.run.app/docs)
+Health check: [Live /health](https://promotwarmayank12-209862935302.us-central1.run.app/health)
+
+### Frontend
 
 ```bash
 cd frontend
 npm install
 npm run dev
+```
+
+App: http://localhost:5173
+
+### Run Tests
+
+```bash
+cd backend
+pytest tests/ -v
+```
+
+## Deployment (Cloud Run)
+
+```bash
+cd backend
+gcloud builds submit --tag gcr.io/PROJECT_ID/emergency-agent
+gcloud run deploy emergency-agent --image gcr.io/PROJECT_ID/emergency-agent
 ```
 
 ## License
